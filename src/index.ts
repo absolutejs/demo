@@ -1,0 +1,91 @@
+export { createDemoRunner, type CreateDemoRunnerOptions } from "./runner";
+export {
+	createDemoManifest,
+	writeDemoManifest,
+	type DemoManifest,
+	type DemoManifestOptions,
+} from "./manifest";
+export {
+	createDemoTimeline,
+	getDemoArtifactOffsetMs,
+	type CreateDemoTimelineOptions,
+} from "./timeline";
+export {
+	composeDemoWithFFmpeg,
+	createFFmpegDemoComposer,
+	type DemoComposer,
+	type FFmpegDemoCompositionOptions,
+} from "./composition";
+export {
+	createDemoSyncPlan,
+	type DemoSyncPlan,
+	type DemoSyncPlanItem,
+} from "./syncPlan";
+export {
+	applyPronunciationAliases,
+	createDeepgramAuraVoiceover,
+	createElevenLabsVoiceover,
+	createVoiceTTSVoiceover,
+	DEFAULT_ELEVENLABS_MODEL_ID,
+	DEFAULT_ELEVENLABS_OUTPUT_FORMAT,
+	DEFAULT_ELEVENLABS_VOICE_ID,
+	DEFAULT_PRONUNCIATION_RULES,
+	withPronunciationAliases,
+	withRenderCache,
+	type DeepgramAuraVoiceoverOptions,
+	type ElevenLabsVoiceSettings,
+	type ElevenLabsVoiceoverOptions,
+	type PronunciationRule,
+	type RenderCacheOptions,
+	type VoiceTTSVoiceoverOptions,
+} from "./voiceover";
+export {
+	circle,
+	clearAnnotations,
+	click,
+	demoScript,
+	fill,
+	focusApp,
+	goto,
+	highlight,
+	hotkey,
+	markRecording,
+	narrate,
+	openApp,
+	press,
+	screenshot,
+	signIn,
+	spotlight,
+	typeText,
+	wait,
+	waitFor,
+} from "./script";
+export {
+	createDemoAuthDriver,
+	type DemoAuthDriverOptions,
+} from "./auth";
+export type {
+	DemoAnnotation,
+	DemoAnnotationDriver,
+	DemoAuthDriver,
+	DemoArtifact,
+	DemoBrowserDriver,
+	DemoContext,
+	DemoCredentialProfile,
+	DemoDesktopDriver,
+	DemoFormField,
+	DemoFormStep,
+	DemoLoginSuccess,
+	DemoMetadata,
+	DemoNarrationInput,
+	DemoRecorder,
+	DemoRunInfo,
+	DemoRunReport,
+	DemoRunnerEvent,
+	DemoScript,
+	DemoSecret,
+	DemoStep,
+	DemoTimelineEntry,
+	DemoVoiceover,
+	DesktopAppTarget,
+} from "./types";
