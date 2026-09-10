@@ -8,7 +8,7 @@
         "@absolutejs/absolute": "0.20.0-beta.0",
         "@absolutejs/ai": "0.0.46",
         "@absolutejs/auth": "0.56.17",
-        "@absolutejs/changelog": "^0.1.2",
+        "@absolutejs/changelog": "^0.2.0",
         "@absolutejs/sync": "2.9.1",
         "@absolutejs/voice": "0.0.22-beta.644",
         "@absolutejs/voice-tester": "0.0.4-beta.2",
@@ -51,7 +51,7 @@
 
     "@absolutejs/auth": ["@absolutejs/auth@0.56.17", "", { "dependencies": { "@absolutejs/linked-providers": "0.0.5", "@absolutejs/manifest": "^0.3.0", "@neondatabase/serverless": "1.0.0", "@sinclair/typebox": "^0.34.0", "citra": "0.29.7" }, "peerDependencies": { "@node-saml/node-saml": ">=5", "@opentelemetry/api": ">=1.7", "@simplewebauthn/browser": ">=13", "@simplewebauthn/server": ">=13", "drizzle-orm": ">=1.0.0-rc.4 <2", "elysia": ">= 1.4.26", "react": ">=18 <20", "solid-js": ">=1.8", "svelte": ">=4", "vue": ">=3.4" }, "optionalPeers": ["@node-saml/node-saml", "@opentelemetry/api", "@simplewebauthn/browser", "@simplewebauthn/server", "react", "solid-js", "svelte", "vue"], "bin": { "absolute-auth": "dist/cli/migrate.js" } }, "sha512-rYI0ZTTNwbhmKykrssj8QsJmYQut+BLCal1lJ6qr8Q62OPE4MU0gs6aU4bMu+t78vm66/vKCoCxEMyqyWYeBog=="],
 
-    "@absolutejs/changelog": ["@absolutejs/changelog@0.1.2", "", { "bin": { "absolute-changelog": "dist/cli.js" } }, "sha512-q6gQwkDr0IVdWHzTOT3AaZvPSn0ucNidbjBnAUZ8CSwS3wrCd02YMXuBC8sd0ptpYvCowLnR/QWIpBrNqbn+YA=="],
+    "@absolutejs/changelog": ["@absolutejs/changelog@0.2.0", "", { "bin": { "absolute-changelog": "dist/cli.js" } }, "sha512-9GdRyWB3X5zEwlTcVCH+qUS84FTChCoZvli0z3Gp8SI3pnLN4XK3vO0s45dPk5ZfezxAzC1ZwlKWTh44eLxh1w=="],
 
     "@absolutejs/linked-providers": ["@absolutejs/linked-providers@0.0.2", "", {}, "sha512-MNUIQBzUFWIqsrC33PO8YpWzT8tW0S3QWpcLZuLrt+nhyffU8w8aDNni/6jrGh36WGqauHWIsaz2gn7hLS+5Sw=="],
 

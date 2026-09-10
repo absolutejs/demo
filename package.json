@@ -73,7 +73,8 @@
 		"release": "bun run format && bun run build && bun publish",
 		"test": "bun test",
 		"typecheck": "absolute typecheck",
-		"check:package": "absolute-changelog check"
+		"check:package": "absolute-changelog check",
+		"prepublishOnly": "absolute-changelog check"
 	},
 	"peerDependencies": {
 		"@absolutejs/ai": ">=0.0.5",
@@ -107,7 +108,7 @@
 		"@absolutejs/absolute": "0.20.0-beta.0",
 		"@absolutejs/ai": "0.0.46",
 		"@absolutejs/auth": "0.56.17",
-		"@absolutejs/changelog": "^0.1.2",
+		"@absolutejs/changelog": "^0.2.0",
 		"@absolutejs/sync": "2.9.1",
 		"@absolutejs/voice": "0.0.22-beta.644",
 		"@absolutejs/voice-tester": "0.0.4-beta.2",
