@@ -108,7 +108,7 @@
 		"@absolutejs/absolute": "0.20.0-beta.0",
 		"@absolutejs/ai": "0.0.46",
 		"@absolutejs/auth": "0.56.17",
-		"@absolutejs/changelog": "^0.4.0",
+		"@absolutejs/changelog": "^0.5.1",
 		"@absolutejs/sync": "2.9.1",
 		"@absolutejs/voice": "0.0.22-beta.644",
 		"@absolutejs/voice-tester": "0.0.4-beta.2",
