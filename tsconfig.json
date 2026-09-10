@@ -3,7 +3,10 @@
 		"target": "ESNext",
 		"module": "ESNext",
 		"moduleResolution": "Bundler",
-		"lib": ["ESNext", "DOM"],
+		"lib": [
+			"ESNext",
+			"DOM"
+		],
 		"strict": true,
 		"esModuleInterop": true,
 		"skipLibCheck": true,
@@ -14,5 +17,8 @@
 		"isolatedModules": true,
 		"outDir": "./dist"
 	},
-	"include": ["src/**/*.ts"]
+	"include": [
+		"src/**/*.ts",
+		"changelog/**/*"
+	]
 }
