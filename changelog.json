@@ -1,5 +1,16 @@
 {
 	"contract": 1,
 	"name": "@absolutejs/demo",
-	"releases": []
+	"releases": [
+		{
+			"changes": [
+				{
+					"kind": "fixed",
+					"summary": "Ship a runnable narrated MP4 quick start with complete setup and recording finalization"
+				}
+			],
+			"date": "2026-10-09",
+			"version": "0.0.1-beta.1"
+		}
+	]
 }

@@ -64,7 +64,7 @@ export type ScreenRecorderOptions = {
 	cropRect?: { x: number; y: number; width: number; height: number };
 	framerate?: number;
 	// PulseAudio capture. true → default source; or pass a device (e.g. a sink
-	// monitor like "…​.monitor" to record playback such as a Meet/Discord call).
+	// monitor like "….monitor" to record playback such as a Meet/Discord call).
 	// Omit/false → video only.
 	audio?: boolean | { device?: string };
 	ffmpegPath?: string;

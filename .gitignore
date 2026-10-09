@@ -20,3 +20,6 @@ Thumbs.db
 
 # AbsoluteJS CLI cache
 .absolutejs/
+
+# Local demo recordings and rendered narration
+.demo-artifacts/

@@ -1,6 +1,6 @@
 {
 	"name": "@absolutejs/demo",
-	"version": "0.0.1-beta.0",
+	"version": "0.0.1-beta.1",
 	"description": "Automated product-demo runtime for AbsoluteJS — drives browser and desktop workflows, records the screen, adds presenter-style highlights, and coordinates AI voiceover.",
 	"repository": {
 		"type": "git",
@@ -14,7 +14,8 @@
 		"CHANGELOG.md",
 		"README.md",
 		"changelog.json",
-		"dist"
+		"dist",
+		"examples/quick-start.ts"
 	],
 	"main": "./dist/index.js",
 	"types": "./dist/index.d.ts",
@@ -74,7 +75,8 @@
 		"test": "bun test",
 		"typecheck": "absolute typecheck",
 		"check:package": "absolute-changelog check",
-		"prepublishOnly": "bun run check:package"
+		"prepublishOnly": "bun run check:package",
+		"demo": "bun examples/quick-start.ts"
 	},
 	"peerDependencies": {
 		"@absolutejs/ai": ">=0.0.5",

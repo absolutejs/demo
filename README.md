@@ -11,87 +11,144 @@ real demos often need Discord, Google Meet, native apps, screen switching, and
 OS-level focus control. This package keeps those capabilities behind stable
 interfaces so each environment can provide the right driver.
 
-## Install
+## Install and make your first MP4
+
+Requires Bun, FFmpeg on PATH, and an ElevenLabs synthesis API key.
+Install Chromium as well as the Playwright package:
 
 ```sh
-bun add @absolutejs/demo
-```
-
-Install optional drivers only when needed:
-
-```sh
+bun add @absolutejs/demo @absolutejs/sync
 bun add -d playwright
+bunx playwright install chromium
+ffmpeg -version
 ```
 
-## Browser demo
+The root entry point exports the sync-plan helper and loads `@absolutejs/sync`.
+The other optional integrations are needed only when used. On a Linux host
+missing browser system libraries, install them with `bunx playwright install --with-deps chromium`.
+Install FFmpeg using your OS package manager (for example `brew install ffmpeg`
+on macOS or `sudo apt-get install ffmpeg` on Debian/Ubuntu).
+
+Set `ELEVENLABS_API_KEY` in your environment or a local `.env` file. Save the
+following as `demo.ts` and run `bun demo.ts` (or `DEMO_HEADLESS=1 bun demo.ts`
+on a server). The narration request uses your ElevenLabs account.
+
+This example hosts its own local fixture, so no existing application or login
+credentials are needed. It writes `.demo-artifacts/quick-start/crm-demo.mp4`
+and a manifest containing the recording, narration, and final video. Re-running
+overwrites that output. The same script ships at `examples/quick-start.ts`.
 
 ```ts
+import { mkdir } from "node:fs/promises";
 import {
 	createDemoRunner,
 	goto,
 	narrate,
-	signIn,
 	spotlight,
 	writeDemoManifest,
 } from "@absolutejs/demo";
-import { createDemoAuthDriver } from "@absolutejs/demo/auth";
-import {
-	createPlaywrightDemoSession,
-} from "@absolutejs/demo/playwright";
+import { createPlaywrightDemoSession } from "@absolutejs/demo/playwright";
+import { createElevenLabsVoiceover } from "@absolutejs/demo/voiceover";
+import { composeDemoWithFFmpeg } from "@absolutejs/demo/composition";
 
-const session = await createPlaywrightDemoSession({
-	headless: false,
-	recordVideoDir: ".demo-video",
-	screenshotDir: ".demo-shots",
+const apiKey = process.env.ELEVENLABS_API_KEY;
+if (!apiKey)
+	throw new Error("Set ELEVENLABS_API_KEY in your environment or .env file.");
+const outputDir = ".demo-artifacts/quick-start";
+await mkdir(outputDir, { recursive: true });
+
+// Render before recording so network latency does not leave dead air.
+const text =
+	"Here is the live pipeline view. Revenue at risk is forty-two thousand dollars.";
+const voiceover = createElevenLabsVoiceover({ apiKey, outputDir });
+const narration = await voiceover.speak({ text });
+
+// A local fixture makes this runnable without an existing app or login.
+const server = Bun.serve({
+	hostname: "127.0.0.1",
+	port: 0,
+	fetch: () =>
+		new Response(
+			'<!doctype html><html lang="en"><title>CRM demo</title><body style="font:24px sans-serif;padding:80px"><h1>Pipeline</h1><p id="total">Revenue at risk: $42,000</p></body></html>',
+			{ headers: { "content-type": "text/html" } },
+		),
 });
 
-const runner = createDemoRunner({
-	auth: createDemoAuthDriver(),
-	browser: session.browserDriver,
-	annotations: session.annotations,
-	voiceover: {
-		speak: async ({ text }) => {
-			console.log("[voiceover]", text);
-		},
-	},
-});
-
-const report = await runner.run({
-	profiles: [
-		{
-			id: "ae",
-			kind: "absolute",
-			baseUrl: "http://localhost:3000",
-			email: { env: "DEMO_EMAIL" },
-			password: { env: "DEMO_PASSWORD" },
-			afterLoginUrl: "http://localhost:3000/pipeline",
-		},
-	],
-	id: "crm-demo",
-	title: "CRM demo",
-	steps: [
-		signIn("ae"),
-		narrate("Here is the live pipeline view."),
-		goto("http://localhost:3000/pipeline"),
-		spotlight({
-			selector: "[data-demo='pipeline-total']",
-			label: "Revenue at risk",
-			durationMs: 1800,
-		}),
-	],
-});
-
-await writeDemoManifest(report, ".demo-artifacts/crm-demo.manifest.json");
-console.log(report.status, report.artifacts);
-await session.close();
+try {
+	const session = await createPlaywrightDemoSession({
+		headless: process.env.DEMO_HEADLESS === "1",
+		recordVideoDir: outputDir,
+		contextOptions: { viewport: { width: 1280, height: 720 } },
+	});
+	let closed = false;
+	try {
+		const runner = createDemoRunner({
+			browser: session.browserDriver,
+			annotations: session.annotations,
+			voiceover: { speak: async () => narration },
+			voiceoverPlayback: "wait-for-duration",
+		});
+		const report = await runner.run({
+			id: "crm-demo",
+			steps: [
+				goto(server.url.href),
+				spotlight({ selector: "#total", label: "Revenue at risk" }),
+				narrate(text),
+			],
+		});
+		// Closing finalizes the video; the session does not attach it for you.
+		const recording = await session.close();
+		closed = true;
+		if (recording) report.artifacts.push(recording);
+		if (report.status === "completed") {
+			report.artifacts.push(
+				await composeDemoWithFFmpeg(report, {
+					outputPath: outputDir + "/crm-demo.mp4",
+					voiceoverTiming: "timeline",
+				}),
+			);
+		}
+		await writeDemoManifest(report, outputDir + "/crm-demo.manifest.json");
+		if (report.status !== "completed")
+			throw new Error(report.error?.message ?? "Demo failed");
+		console.log("Created", outputDir + "/crm-demo.mp4");
+	} finally {
+		if (!closed) await session.close();
+	}
+} finally {
+	await server.stop(true);
+}
 ```
+
+To demo your product, replace the fixture URL and selectors, add the auth driver
+and a profile below, and replace the narration text. `wait-for-duration` reserves
+screen time for the audio; it does not play audio through your speakers. The
+composition step adds the audio to the final video. For multiple lines, render
+and cache each line before recording and return its artifact from `speak`.
+
+Always finalize the Playwright session, attach its returned recording to the
+report, compose, and then write the manifest. Command recorders attached to the
+runner collect their recording artifact automatically. Composition defaults to
+sequential narration; use `voiceoverTiming: "timeline"` for run-clock placement.
+
+## Packages and helpers
+
+The browser, desktop, recording, auth, voiceover, composition, script, timeline,
+manifest, and sync-plan helpers are subpath exports of `@absolutejs/demo`.
+`@absolutejs/voice` supplies voice adapter contracts; `@absolutejs/voice-tester`
+and `@absolutejs/meeting` with `@absolutejs/meeting-discord` or
+`@absolutejs/meeting-recall` support optional live-call scenes.
+The larger [examples/demo application](https://github.com/absolutejs/examples/tree/main/demo)
+contains those scene helpers; it is not required for this quick start.
 
 ## Authentication
 
 Sign-in is profile-based. Declare named credential `profiles` on the script and
 trigger them with `signIn("<id>")` steps. Credentials are passed as env
-*references* (`{ env: "VAR_NAME" }`) — the runner resolves them at sign-in time,
-so real secrets never enter the script object, the manifest, or the recording.
+_references_ (`{ env: "VAR_NAME" }`) — the runner resolves them at sign-in time,
+so credential values stay out of the script object. Environment references do
+not redact the screen: login fields, account names, or errors can appear in
+recordings and reports. Use demo accounts and review artifacts before sharing.
 A missing env var throws an error naming the variable, never its value.
 
 Three profile kinds cover the common cases:
@@ -120,8 +177,8 @@ Three profile kinds cover the common cases:
 }
 ```
 
-See `examples/demo/src/sign-in.ts` for runnable own-site (`absolute`) and
-third-party (`form`) examples. For bespoke auth screens, provide your own
+See [examples/demo/src/run.ts](https://github.com/absolutejs/examples/blob/main/demo/src/run.ts)
+for the larger runnable form-login demo. For bespoke auth screens, provide your own
 `DemoAuthDriver`.
 
 ## Desktop control
@@ -141,11 +198,7 @@ const runner = createDemoRunner({
 
 await runner.run({
 	id: "discord-demo",
-	steps: [
-		openApp("Discord"),
-		wait(1000),
-		focusApp("Discord"),
-	],
+	steps: [openApp("Discord"), wait(1000), focusApp("Discord")],
 });
 ```
 
@@ -205,5 +258,6 @@ import { composeDemoWithFFmpeg } from "@absolutejs/demo/composition";
 
 const finalVideo = await composeDemoWithFFmpeg(report, {
 	outputPath: ".demo-artifacts/crm-demo.mp4",
+	voiceoverTiming: "timeline",
 });
 ```
